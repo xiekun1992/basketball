@@ -1,0 +1,7 @@
+{
+  "name": "basketball",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
