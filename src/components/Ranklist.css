@@ -1,0 +1,51 @@
+.id {
+  display: inline-block;
+  width: 4em;
+  vertical-align: middle;
+  text-align: center;
+}
+.name {
+  display: inline-block;
+  width: calc(100% - 8em);
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+.score {
+  display: inline-block;
+  text-align: right;
+  width: 4em;
+  vertical-align: middle;
+}
+.no-1 {
+  background-image: url('../imgs/ribbon.jpg');
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background-size: 273%;
+  background-repeat: no-repeat;
+  background-position: 3px 0px;
+  font-size: 0;
+  overflow: hidden;
+}
+.no-2 {
+  background-image: url('../imgs/ribbon.jpg');
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background-size: 273%;
+  background-repeat: no-repeat;
+  background-position: -26px 0px;
+  font-size: 0;
+  overflow: hidden;
+}
+.no-3 {
+  background-image: url('../imgs/ribbon.jpg');
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background-size: 273%;
+  background-repeat: no-repeat;
+  background-position: -55px 0px;
+  font-size: 0;
+  overflow: hidden;
+}
