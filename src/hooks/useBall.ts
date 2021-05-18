@@ -1,41 +1,81 @@
+import { useIonAlert } from "@ionic/react";
 import { useState } from "react";
+import config from '../config.json'
+
+interface Mission {
+  mission: number
+  seconds: number,
+  requirements: number,
+  interval: number,
+  speed: number,
+  gcode: string,
+  desc: string
+}
 
 export function useBall() {
-  let [seconds, setSeconds] = useState(30)
-  const [requirements] = useState(20)
-  const [missions] = useState([])
-  let [ranklist, setRanklist] = useState<Ranklist[]>([])
+  const [missions] = useState(config as Mission[])
+  let missionIdx: number = 0 // 0 第一关
+  console.log(missions)
+  
+  let [seconds, setSeconds] = useState(missions[missionIdx].seconds)
+  let [requirements, setRequirements] = useState(missions[missionIdx].requirements)
   let [balls, setBalls] = useState(0)
-  let timeout: number
-  let mission: number = 0 // 0 第一关
+  let [isPlaying, setIsPlaying] = useState(false)
+  
+  console.log(seconds)
+  const [present] = useIonAlert()
+  
+  let timer: number
 
-  let isPlaying: boolean = false
+  // let isPlaying: boolean = false
 
+  
   const showldGoNext = () => {
     return balls >= requirements
   }
   // todo：建立蓝牙通信
-
+  
   const startMission = () => {
     // 传输gcode
   }
+  const resetGame = () => {
+    missionIdx = 0
+    setIsPlaying(false)
+    setBalls(0)
+    setSeconds(missions[missionIdx].seconds)
+    setRequirements(missions[missionIdx].requirements)
+  }
   const endMission = () => {
     // 停止gcode传输和进球更新
+
+    present({
+      cssClass: 'my-css',
+      header: '提示',
+      message: '很遗憾，通关失败',
+      buttons: [
+        { text: '确定', handler: (d) => resetGame() },
+      ],
+      onDidDismiss: (e) => console.log('did dismiss'),
+    })
   }
   const startGame = () => {
-    window.clearInterval(timeout)
-    timeout = window.setInterval(() => {
+    if (isPlaying) {
+      return
+    }
+    setIsPlaying(true)
+    window.clearInterval(timer)
+    timer = window.setInterval(() => {
       if (seconds <= 0 || showldGoNext()) {
-        window.clearInterval(timeout)
+        window.clearInterval(timer)
         endMission()
         
         if (showldGoNext()) {
-          if (mission >= missions.length - 1) {
+          if (missionIdx >= missions.length - 1) {
             // 通关并进入排行榜、提示闯关成功
             
           } else {
             // 进入下一关
-            mission++
+            missionIdx++
             startMission()
           }
         } else {
@@ -48,14 +88,41 @@ export function useBall() {
     }, 1000)
   }
 
+  let [showAlert, setShowAlert] = useState(false)
+  let [message, setMessage] = useState('')
+
+  let timer1: number
+
+  const startGameAlert = () => {
+    setShowAlert(true)
+    let counter = 3
+    // setCounter(counter)
+    setMessage(counter.toString())
+    clearInterval(timer1)
+    timer1 = window.setInterval(() => {
+      if (counter <= 0) {
+        counter = 0
+        setMessage(counter.toString())
+        setShowAlert(false)
+        startGame()
+        clearInterval(timer1)
+      } else {
+        --counter
+        console.log(counter.toString())
+        setMessage(counter.toString())
+      }
+    }, 1000)
+  }
+
   return {
+    showAlert,
+    message,
     seconds,
     requirements,
-    startGame
+    desc: missions[missionIdx].desc,
+    mission: missions[missionIdx].mission,
+    balls,
+    isPlaying,
+    startGameAlert
   }
-}
-
-interface Ranklist {
-  username: string
-  balls: number
 }

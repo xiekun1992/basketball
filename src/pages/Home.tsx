@@ -18,7 +18,7 @@ const Home: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         <ExploreContainer/>
-        <div style={{height: 'calc(100% - 210px)', overflow: 'hidden'}}>
+        <div style={{height: 'calc(100% - 280px)', overflow: 'hidden'}}>
           <h2 style={{textAlign: 'center'}}>排行榜</h2>
           <IonList>
             <IonItem>

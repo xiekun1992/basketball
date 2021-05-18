@@ -1,17 +1,29 @@
 [
   {
+    "mission": 1,
     "seconds": 30,
-    "requirements": 20,
-    "gcode": ""
+    "requirements": 15,
+    "interval": 1000,
+    "speed": 1200,
+    "gcode": "",
+    "desc": "篮框不动"
   },
   {
+    "mission": 2,
     "seconds": 30,
-    "requirements": 20,
-    "gcode": ""
+    "requirements": 30,
+    "interval": 1000,
+    "speed": 1200,
+    "gcode": "",
+    "desc": "篮框将左右移动"
   },
   {
+    "mission": 3,
     "seconds": 30,
-    "requirements": 20,
-    "gcode": ""
+    "requirements": 45,
+    "interval": 1000,
+    "speed": 1200,
+    "gcode": "",
+    "desc": "篮框将上下左右移动"
   }
 ]
