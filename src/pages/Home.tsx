@@ -6,17 +6,17 @@ import './Home.css';
 const Home: React.FC = () => {
   return (
     <IonPage>
-      <IonHeader>
+      {/* <IonHeader>
         <IonToolbar>
           <IonTitle>投篮小游戏</IonTitle>
         </IonToolbar>
-      </IonHeader>
+      </IonHeader> */}
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
+        {/* <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">投篮小游戏</IonTitle>
           </IonToolbar>
-        </IonHeader>
+        </IonHeader> */}
         <ExploreContainer/>
         <div style={{height: 'calc(100% - 280px)', overflow: 'hidden'}}>
           <h2 style={{textAlign: 'center'}}>排行榜</h2>

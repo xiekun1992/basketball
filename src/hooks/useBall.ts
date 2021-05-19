@@ -1,6 +1,8 @@
-import { useIonAlert } from "@ionic/react";
+import { isPlatform, useIonAlert } from "@ionic/react";
 import { useState } from "react";
 import config from '../config.json'
+import { BluetoothSerial } from '@ionic-native/bluetooth-serial'
+import { useRanklist } from "./useRanklist";
 
 interface Mission {
   mission: number
@@ -19,8 +21,11 @@ export function useBall() {
   
   let [seconds, setSeconds] = useState(missions[missionIdx].seconds)
   let [requirements, setRequirements] = useState(missions[missionIdx].requirements)
+  let [desc, setDesc] = useState(missions[missionIdx].desc)
+  let [level, setLevel] = useState(missions[missionIdx].mission)
   let [balls, setBalls] = useState(0)
   let [isPlaying, setIsPlaying] = useState(false)
+  const {addToRanklist} = useRanklist()
   
   console.log(seconds)
   const [present] = useIonAlert()
@@ -28,6 +33,22 @@ export function useBall() {
   let timer: number
 
   // let isPlaying: boolean = false
+  if (isPlatform('hybrid')) {
+    BluetoothSerial.connect('B8:08:CF:99:50:97').toPromise().then(console.log).then(() => {
+      BluetoothSerial.subscribe('\n').toPromise().then(data => {
+        // 投币
+        // IO.1:0
+        // IO.1:1
+        // 进球
+        // IO.2:0
+        // IO.2:1
+        // IO.3:0
+        // IO.3:1
+        console.log(data)
+  
+      })
+    })
+  }
 
   
   const showldGoNext = () => {
@@ -37,6 +58,68 @@ export function useBall() {
   
   const startMission = () => {
     // 传输gcode
+
+    window.clearInterval(timer)
+    timer = window.setInterval(() => {
+      if (seconds <= 0 || showldGoNext()) {
+        window.clearInterval(timer)
+        
+        if (showldGoNext()) {
+          if (missionIdx >= missions.length - 1) {
+            // 通关并进入排行榜、提示闯关成功
+            present({
+              cssClass: 'my-css',
+              header: '提示',
+              message: '恭喜你，进入排行榜',
+              inputs: [
+                {
+                  name: 'name',
+                  type: 'text',
+                  placeholder: '请输入ID'
+                }
+              ],
+              buttons: [
+                { text: '确定', handler: (d) => {
+                  console.log(d)
+                  addToRanklist({
+                    username: d.name,
+                    balls: balls
+                  })
+                  resetGame() 
+                }},
+              ],
+              onDidDismiss: (e) => console.log(e),
+            })
+          } else {
+            // 进入下一关
+            missionIdx++
+            present({
+              cssClass: 'my-css',
+              header: '提示',
+              message: '恭喜你，成功进入下一关',
+              buttons: [
+                { text: '继续', handler: (d) => {
+                  balls = missions[missionIdx].requirements + 1
+                  setBalls(balls)
+                  setSeconds(missions[missionIdx].seconds)
+                  setRequirements(missions[missionIdx].requirements)
+                  setDesc(missions[missionIdx].desc)
+                  setLevel(missions[missionIdx].mission)
+                  startGameAlert(startMission)
+                }},
+              ],
+              onDidDismiss: (e) => console.log('did dismiss'),
+            })
+          }
+        } else {
+          // 提示重新再来
+          endMission()
+        }
+      } else {
+        seconds--
+        setSeconds(seconds)
+      }
+    }, 1000)
   }
   const resetGame = () => {
     missionIdx = 0
@@ -44,6 +127,8 @@ export function useBall() {
     setBalls(0)
     setSeconds(missions[missionIdx].seconds)
     setRequirements(missions[missionIdx].requirements)
+    setDesc(missions[missionIdx].desc)
+    setLevel(missions[missionIdx].mission)
   }
   const endMission = () => {
     // 停止gcode传输和进球更新
@@ -63,29 +148,14 @@ export function useBall() {
       return
     }
     setIsPlaying(true)
-    window.clearInterval(timer)
-    timer = window.setInterval(() => {
-      if (seconds <= 0 || showldGoNext()) {
-        window.clearInterval(timer)
-        endMission()
-        
-        if (showldGoNext()) {
-          if (missionIdx >= missions.length - 1) {
-            // 通关并进入排行榜、提示闯关成功
-            
-          } else {
-            // 进入下一关
-            missionIdx++
-            startMission()
-          }
-        } else {
-          // 提示重新再来
-        }
-      } else {
-        seconds--
-        setSeconds(seconds)
-      }
-    }, 1000)
+    balls = missions[missionIdx].requirements + 1
+    setBalls(balls)
+    setSeconds(missions[missionIdx].seconds)
+    setRequirements(missions[missionIdx].requirements)
+    setDesc(missions[missionIdx].desc)
+    setLevel(missions[missionIdx].mission)
+
+    startMission()
   }
 
   let [showAlert, setShowAlert] = useState(false)
@@ -93,7 +163,7 @@ export function useBall() {
 
   let timer1: number
 
-  const startGameAlert = () => {
+  const startGameAlert = (callback: Function | void) => {
     setShowAlert(true)
     let counter = 3
     // setCounter(counter)
@@ -104,7 +174,11 @@ export function useBall() {
         counter = 0
         setMessage(counter.toString())
         setShowAlert(false)
-        startGame()
+        if (!callback) {
+          startGame()
+        } else {
+          callback()
+        }
         clearInterval(timer1)
       } else {
         --counter
@@ -119,8 +193,8 @@ export function useBall() {
     message,
     seconds,
     requirements,
-    desc: missions[missionIdx].desc,
-    mission: missions[missionIdx].mission,
+    desc,
+    level,
     balls,
     isPlaying,
     startGameAlert

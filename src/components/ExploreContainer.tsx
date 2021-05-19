@@ -10,7 +10,7 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
     seconds,
     requirements,
     balls,
-    mission,
+    level,
     desc,
     showAlert,
     message,
@@ -25,12 +25,12 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
         已投进{balls}球
       </div>
       <p>
-        第{mission}关<br/>
+        第{level}关<br/>
         过关条件：投进{requirements}球<br/>
         关卡说明：{desc}
       </p>
       {/* <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p> */}
-      <IonButton disabled={isPlaying} expand="full" size="large" onClick={startGameAlert}>开始</IonButton>
+      <IonButton disabled={isPlaying} expand="full" size="large" onClick={startGameAlert.bind(null, void(0))}>开始</IonButton>
       <div style={{display: showAlert ? 'block': 'none'}} className="start-game-alert">
         {message}
       </div>
